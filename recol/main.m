@@ -1,18 +1,21 @@
-//
-//  main.m
-//  recol
-//
-//  Created by Alice Grace on 7/6/25.
-//
-
 #import <UIKit/UIKit.h>
-#import "AppDelegate.h"
 
-int main(int argc, char * argv[]) {
-  NSString * appDelegateClassName;
+#import "app_delegate.h"
+
+int main(
+  int length_parameters,
+  char** parameters
+) {
+  NSString* name_class_app_delegate;
+
   @autoreleasepool {
-      // Setup code that might create autoreleased objects goes here.
-      appDelegateClassName = NSStringFromClass([AppDelegate class]);
+    name_class_app_delegate = NSStringFromClass([AppDelegate class]);
   }
-  return UIApplicationMain(argc, argv, nil, appDelegateClassName);
+
+  return UIApplicationMain(
+    length_parameters,
+    parameters,
+    nil,
+    name_class_app_delegate
+  );
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<document
+  initialViewController="view-controller-core"
+  targetRuntime="iOS.CocoaTouch"
+  toolsVersion="23727"
+  type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB"
+  version="3.0"
+>
+  <scenes>
+    <scene sceneID="scene-core">
+      <objects>
+          <viewController
+            id="view-controller-core"
+            customClass="view_controller"
+            sceneMemberID="viewController"
+          >
+            <view
+              key="view"
+              customClass="MTKView"
+            />
+          </viewController>
+          
+          <placeholder
+            id="first-responder-core"
+            sceneMemberID="firstResponder"
+          />
+      </objects>
+    </scene>
+  </scenes>
+</document>
