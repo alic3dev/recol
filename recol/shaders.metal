@@ -17,9 +17,15 @@ vertex metal_kit_rasterizer_data metal_kit_vertex_shader(
   vector_float2 size_viewport = vector_float2(*pointer_size_viewport);
 
   data_out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
-  data_out.position.xy = position_space_pixel / (size_viewport / 2.0);
+  data_out.position.x = position_space_pixel.x - 1.0f;
+  data_out.position.y = position_space_pixel.y - 1.0f;
 
-  data_out.color = vertices[id_vertex].color;
+  data_out.color = vector_float4(
+    position_space_pixel.x / 2.0f,
+    position_space_pixel.y / 2.0f,
+    (position_space_pixel.x + position_space_pixel.y) / 4.0f,
+    1.0f
+  );
 
   return data_out;
 }
