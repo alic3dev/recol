@@ -1,26 +1,29 @@
-#import <simd/simd.h>
-#import <ModelIO/ModelIO.h>
-
 #import "renderer.h"
 #import "shader_types.h"
 
-@implementation Renderer {
+#include <MetalKit/MetalKit.h>
+#include <simd/simd.h>
+
+@implementation metal_kit_renderer {
   id<MTLDevice> metal_kit_device;
   id<MTLCommandQueue> command_queue;
   id<MTLRenderPipelineState> state_pipeline;
   vector_uint2 size_viewport;
   
+  AVAudioFrameCount frame_count;
+  const AudioBufferList* input_data; 
+
   int frame;
   char direction_frame;
 }
 
--(nonnull instancetype)initWithMetalKitView:(nonnull MTKView*) metal_kit_view {
+- (nonnull instancetype) initWithMetalKitView: (nonnull MTKView*) metal_kit_view {
   self = [super init];
   
   if (!self) {
     return self;
   }
-  
+
   frame = 0;
   direction_frame = 1;
 
@@ -29,11 +32,9 @@
   id<MTLLibrary> metal_kit_library = [metal_kit_device
     newDefaultLibrary
   ];
-  
   id<MTLFunction> metal_kit_vertex_shader = [metal_kit_library
     newFunctionWithName: @"metal_kit_vertex_shader"
   ];
-  
   id<MTLFunction> metal_kit_fragment_shader = [metal_kit_library
     newFunctionWithName: @"metal_kit_fragment_shader"
   ];
@@ -72,19 +73,19 @@
   return self;
 }
 
-- (void) _loadMetalWithView:(nonnull MTKView*)view; {
-  view.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-  view.sampleCount = 1;
-}
+- (void) data_set: (AVAudioFrameCount) frame_count input_data: (const AudioBufferList*) input_data {
+  self->frame_count = frame_count;
+  self->input_data = input_data;
+} 
 
-- (void) drawInMTKView:(nonnull MTKView*) metal_kit_view {
+- (void)drawInMTKView: (nonnull MTKView*) metal_kit_view {
   const metal_kit_vertex vertices_square[] = {
-    {{ 250 + frame, -250 - frame }, { 1, 0, 0, 1 }},
-    {{ -250 - frame, -250 - frame }, { 0, 0, 1, 1 }},
-    {{ -250 - frame, 250 + frame }, { 1, 0, 1, 1 }},
-    {{ -250 - frame, 250 + frame }, { 1, 0, 1, 1 }},
-    {{ 250 + frame, 250 + frame }, { 0, 0, 1, 1 }},
-    {{ 250 + frame, -250 - frame }, { 1, 0, 0, 1 }}
+    {{ size_viewport.x, 0 }},
+    {{ 0, 0 }},
+    {{ 0, size_viewport.y }},
+    {{ 0, size_viewport.y }},
+    {{ size_viewport.x, size_viewport.y }},
+    {{ size_viewport.x, size_viewport.y }}
   };
 
   frame = (
@@ -111,14 +112,14 @@
 
     [metal_kit_render_encoder
       setViewport: (MTLViewport) {
-      0.0,
-      0.0,
+      0.0f,
+      0.0f,
       size_viewport.x,
       size_viewport.y,
-      0.0,
-      1.0
+      0.0f,
+      1000000.0f
     }];
-    
+
     [metal_kit_render_encoder
       setRenderPipelineState:state_pipeline
     ];
@@ -128,12 +129,18 @@
       length: sizeof(vertices_square)
       atIndex: metal_kit_vertex_input_index_vertices
     ];
-    
+
     [metal_kit_render_encoder 
       setVertexBytes: &size_viewport
       length: sizeof(size_viewport)
       atIndex: metal_kit_vertex_input_index_viewport_size
     ];
+    
+//    [metal_kit_render_encoder 
+//      setVertexBytes: &self->input_data->mBufferCount
+//      length: sizeof(size_viewport)
+//      atIndex: metal_kit_vertex_input_index_viewport_size
+//    ];
 
     [metal_kit_render_encoder
       drawPrimitives: MTLPrimitiveTypeTriangle
@@ -155,7 +162,7 @@
   ];
 }
 
-- (void)mtkView:(nonnull MTKView*) metal_kit_view drawableSizeWillChange:(CGSize) size {
+- (void) mtkView: (nonnull MTKView*) metal_kit_view drawableSizeWillChange: (CGSize) size {
   size_viewport.x = size.width;
   size_viewport.y = size.height;
 
