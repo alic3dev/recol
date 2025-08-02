@@ -7,23 +7,24 @@ struct metal_kit_rasterizer_data {
 
 vertex metal_kit_rasterizer_data metal_kit_vertex_shader(
   uint id_vertex [[vertex_id]],
-  constant metal_kit_vertex* vertices [[buffer(metal_kit_vertex_input_index_vertices)]],
-  constant vector_uint2* pointer_size_viewport [[buffer(metal_kit_vertex_input_index_viewport_size)]]
+  constant vector_float2* vertices [[buffer(metal_kit_vertex_input_index_vertices)]],
+  constant vector_uint2* pointer_size_viewport [[buffer(metal_kit_vertex_input_index_viewport_size)]],
+  constant float* registers [[buffer(metal_kit_vertex_input_index_registers)]]
 ) {
   metal_kit_rasterizer_data data_out;
 
-  float2 position_space_pixel = vertices[id_vertex].position.xy;
-
-  vector_float2 size_viewport = vector_float2(*pointer_size_viewport);
+  float2 position_space_pixel = vertices[id_vertex].xy;
 
   data_out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
   data_out.position.x = position_space_pixel.x - 1.0f;
-  data_out.position.y = position_space_pixel.y - 1.0f;
+  data_out.position.y = 2.0f * position_space_pixel.y - 1.0f;
+  
+  unsigned char offset_register = (int)(((position_space_pixel.x * position_space_pixel.y)) * 23874.23874f) % 8;
 
   data_out.color = vector_float4(
-    position_space_pixel.x / 2.0f,
-    position_space_pixel.y / 2.0f,
-    (position_space_pixel.x + position_space_pixel.y) / 4.0f,
+    ((float)((int)registers[offset_register] % 1000)) / 1000.0f,
+    registers[offset_register + 1],
+    registers[offset_register + 2],
     1.0f
   );
 

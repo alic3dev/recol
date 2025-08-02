@@ -1,4 +1,5 @@
 #import "renderer.h"
+#include "audio.h"
 #import "shader_types.h"
 
 #include <MetalKit/MetalKit.h>
@@ -15,6 +16,11 @@
 
   int frame;
   char direction_frame;
+  
+  struct recol_audio* audio;
+  
+  vector_uint2 size;
+  unsigned short int length_vertices;
 }
 
 - (nonnull instancetype) initWithMetalKitView: (nonnull MTKView*) metal_kit_view {
@@ -23,6 +29,11 @@
   if (!self) {
     return self;
   }
+  
+  size.x = 52;
+  size.y = 78;
+  
+  length_vertices = size.x * size.y;
 
   frame = 0;
   direction_frame = 1;
@@ -73,20 +84,39 @@
   return self;
 }
 
+- (void) audio_set: (struct recol_audio*) audio {
+  self->audio = audio;
+}
+
 - (void) data_set: (AVAudioFrameCount) frame_count input_data: (const AudioBufferList*) input_data {
   self->frame_count = frame_count;
   self->input_data = input_data;
 } 
 
 - (void)drawInMTKView: (nonnull MTKView*) metal_kit_view {
-  const metal_kit_vertex vertices_square[] = {
-    {{ size_viewport.x, 0 }},
-    {{ 0, 0 }},
-    {{ 0, size_viewport.y }},
-    {{ 0, size_viewport.y }},
-    {{ size_viewport.x, size_viewport.y }},
-    {{ size_viewport.x, size_viewport.y }}
-  };
+  size.x = 20;
+  size.y = 25;
+  
+  length_vertices = size.x * size.y;
+  
+  vector_float2 vertices_square[length_vertices];
+  
+  for (
+    unsigned short int index_y = 0;
+    index_y < size.y;
+    ++index_y
+  ) {
+    for (
+      unsigned short int index_x = 0;
+      index_x < size.x;
+      ++index_x
+    ) {
+      unsigned short int offset_index = index_y * size.x;
+      
+      vertices_square[index_x + offset_index].x = (float)index_x / (float)(size.x - 1);
+      vertices_square[index_x + offset_index].y = (float)index_y / (float)(size.y - 1);
+    }
+  }
 
   frame = (
     frame + direction_frame
@@ -129,23 +159,23 @@
       length: sizeof(vertices_square)
       atIndex: metal_kit_vertex_input_index_vertices
     ];
+    
+    [metal_kit_render_encoder
+      setVertexBytes: audio->registers
+      length: sizeof(float) * 10
+      atIndex: metal_kit_vertex_input_index_registers
+    ];
 
     [metal_kit_render_encoder 
       setVertexBytes: &size_viewport
       length: sizeof(size_viewport)
       atIndex: metal_kit_vertex_input_index_viewport_size
     ];
-    
-//    [metal_kit_render_encoder 
-//      setVertexBytes: &self->input_data->mBufferCount
-//      length: sizeof(size_viewport)
-//      atIndex: metal_kit_vertex_input_index_viewport_size
-//    ];
 
     [metal_kit_render_encoder
-      drawPrimitives: MTLPrimitiveTypeTriangle
+      drawPrimitives: MTLPrimitiveTypePoint
       vertexStart: 0
-      vertexCount: 6
+      vertexCount: length_vertices
     ];
 
     [metal_kit_render_encoder 
@@ -165,15 +195,6 @@
 - (void) mtkView: (nonnull MTKView*) metal_kit_view drawableSizeWillChange: (CGSize) size {
   size_viewport.x = size.width;
   size_viewport.y = size.height;
-
-  float size_combined = size.width + size.height;
-
-  metal_kit_view.clearColor = MTLClearColorMake(
-    fmod(size_combined, 100.0f) / 100.0f,
-    fmod(size_combined + 33.33f, 100.0f) / 100.0f,
-    fmod(size_combined + 66.66f, 100.0f) / 100.0f,
-    1.0f
-  );
 }
 
 @end

@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		9141805C2E1B983A00BAE01D /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9141805B2E1B983A00BAE01D /* Metal.framework */; };
 		9141805E2E1B984000BAE01D /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9141805D2E1B984000BAE01D /* MetalKit.framework */; };
+		91C09CC72E3B2F5200CC19CD /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91C09CC62E3B2F5200CC19CD /* AVFAudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		9141805B2E1B983A00BAE01D /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		9141805D2E1B984000BAE01D /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		91872CD32E1A62370060A439 /* recol.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recol.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91C09CC62E3B2F5200CC19CD /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91C09CC72E3B2F5200CC19CD /* AVFAudio.framework in Frameworks */,
 				9141805E2E1B984000BAE01D /* MetalKit.framework in Frameworks */,
 				9141805C2E1B983A00BAE01D /* Metal.framework in Frameworks */,
 			);
@@ -54,6 +57,7 @@
 		9141805A2E1B983A00BAE01D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				91C09CC62E3B2F5200CC19CD /* AVFAudio.framework */,
 				9141805D2E1B984000BAE01D /* MetalKit.framework */,
 				9141805B2E1B983A00BAE01D /* Metal.framework */,
 			);
