@@ -1,4 +1,4 @@
-#include "shader_types.h"
+#include <shader_types.h>
 
 struct metal_kit_rasterizer_data {
   float4 position [[position]];
@@ -17,7 +17,7 @@ vertex metal_kit_rasterizer_data metal_kit_vertex_shader(
   float2 position_space_pixel = vertices[id_vertex].xy;
 
   data_out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
-  data_out.position.x = (position_space_pixel.x - 0.5f) * 1.75f;
+  data_out.position.x = (position_space_pixel.x - 0.5f) * 1.95f;
   data_out.position.y = (position_space_pixel.y - 0.5f) * 1.75f;
   
   unsigned char offset_register = (int)(((position_space_pixel.x + position_space_pixel.y) * registers[9])) % 8;
@@ -29,7 +29,7 @@ vertex metal_kit_rasterizer_data metal_kit_vertex_shader(
     1.0f
   );
   
-  data_out.point_size = 50;
+  data_out.point_size = 14;
 
   return data_out;
 }
