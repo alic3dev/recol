@@ -8,14 +8,8 @@ struct recol_audio {
   AVAudioFrameCount frame_count;
   const AudioBufferList* input_data;
   AVAudioSourceNodeRenderBlock render_block;
+
   float registers[10];
-  float increment;
-  float phase;
-  float increment_2;
-  float phase_2;
-  float increment_3;
-  float phase_3;
-  unsigned long long int ff;
 };
 
 void recol_audio_initialize(
