@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate: UIResponder <UIApplicationDelegate>
+@interface recol_application_delegate: UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow* window;
 

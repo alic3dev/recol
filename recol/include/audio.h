@@ -5,14 +5,24 @@
 
 struct recol_audio {
   AVAudioEngine* engine_audio;
-  AVAudioFrameCount frame_count;
-  const AudioBufferList* input_data;
   AVAudioSourceNodeRenderBlock render_block;
 
   float registers[10];
+  
+  float* note_table;
+  unsigned int length_note_table;
+  
+  const unsigned char* scale;
+  unsigned char length_scale;
+  
+  float amplitude;
 };
 
 void recol_audio_initialize(
+  struct recol_audio*
+);
+
+void recol_audio_destroy(
   struct recol_audio*
 );
 

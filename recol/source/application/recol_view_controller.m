@@ -1,23 +1,22 @@
-#import "view_controller.h"
+#include <application/recol_view_controller.h>
 
-#include "audio.h"
+#include <application/recol_renderer.h>
+#include <audio.h>
+#include <termination.h>
 
 #import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
-#import <AVFAudio/AVFAudio.h>
 
-#import "renderer.h"
+static struct recol_audio audio;
 
-@implementation view_controller {
+@implementation recol_view_controller {
   MTKView* _view;
-  metal_kit_renderer* _renderer;
-  struct recol_audio audio;
+  recol_renderer* _renderer;
 }
 
 - (void) viewDidLoad {
   [super viewDidLoad];
-  
   
   _view = (MTKView*) self.view;
   
@@ -32,8 +31,12 @@
   recol_audio_initialize(
     &audio
   );
+  
+  termination_on_function_add(
+    recol_view_controller_on_termination
+  );
 
-  _renderer = [[metal_kit_renderer alloc] initWithMetalKitView:_view];
+  _renderer = [[recol_renderer alloc] initWithMetalKitView:_view];
   [_renderer mtkView:_view drawableSizeWillChange:_view.drawableSize];
   [_renderer audio_set: &audio];
   _view.delegate = _renderer;
@@ -46,3 +49,9 @@
 }
 
 @end
+
+void recol_view_controller_on_termination(void) {
+  recol_audio_destroy(
+    &audio
+  );
+}

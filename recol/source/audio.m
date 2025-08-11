@@ -1,23 +1,41 @@
-#include "audio.h"
+#include <audio.h>
 
-#include "cer0.h"
+#include <cer0.h>
+
+const unsigned char count_scales = 5;
+
+const unsigned char* scales[count_scales] = {
+  cer0_scale_notes_octatonic_diminished,
+  cer0_scale_notes_altered,
+  cer0_scale_notes_hirajoshi,
+  cer0_scale_notes_hungarian_gypsy,
+  cer0_scale_notes_melodic_minor_descending
+};
+
+const unsigned char length_scales[count_scales] = {
+  cer0_scale_length_octatonic_diminished,
+  cer0_scale_length_altered,
+  cer0_scale_length_hirajoshi,
+  cer0_scale_length_hungarian_gypsy,
+  cer0_scale_length_melodic_minor_descending
+};
 
 void recol_audio_initialize(
   struct recol_audio* audio
 ) {
-  audio->frame_count = 0;
-  audio->input_data = (void*)0;
-  
-  float* note_table = cer0_note_table_create(
+  audio->note_table = cer0_note_table_create(
     0,
     6,
     cer0_frequency_root_scientific
   );
   
-  unsigned int length_note_table = cer0_note_table_length(
+  audio->length_note_table = cer0_note_table_length(
     0,
     6
   );
+  
+  audio->scale = scales[1];
+  audio->length_scale = length_scales[1];
   
   AVAudioSession* session_audio_shared = [AVAudioSession sharedInstance];
   
@@ -35,7 +53,7 @@ void recol_audio_initialize(
   
   audio->engine_audio = [[AVAudioEngine alloc] init];
   
-  float amplitude = 1.0f;
+  audio->amplitude = 1.0f;
   
   AVAudioMixerNode* node_output = audio->engine_audio.mainMixerNode;
   AVAudioFormat* format_output = [node_output inputFormatForBus:0];
@@ -44,9 +62,9 @@ void recol_audio_initialize(
   audio->registers[1] = 0.0f;
   audio->registers[2] = 0.0f;
   audio->registers[3] = 0.0f;
-  audio->registers[4] = 0.0f;
+  audio->registers[4] = audio->note_table[12];
   audio->registers[5] = 0.0f;
-  audio->registers[6] = note_table[15];
+  audio->registers[6] = audio->note_table[15];
   audio->registers[7] = 0.0f;
   audio->registers[8] = 0.0f;
   audio->registers[9] = 0.0f;
@@ -56,6 +74,7 @@ void recol_audio_initialize(
   __block float** buffer = (void*)0;
   
   __block struct cer0_phase phase;
+  __block struct cer0_phase phase_secondary;
   
   cer0_phase_initialize(
     &phase,
@@ -63,7 +82,14 @@ void recol_audio_initialize(
     audio->registers[6]
   );
   
+  cer0_phase_initialize(
+    &phase_secondary,
+    format_output.sampleRate,
+    audio->registers[4]
+  );
+  
   audio->registers[5] = phase.value;
+  audio->registers[3] = phase_secondary.value;
   
   AVAudioSourceNode* node_source = [[AVAudioSourceNode alloc]
     initWithFormat:format_output
@@ -105,55 +131,83 @@ void recol_audio_initialize(
         }
       }
       
-      if ((int) audio->registers[7] % 16 == 0) {
-        audio->registers[9] = (
-          audio->registers[9] + 1
-        );
-
-        cer0_phase_frequency_set(
-          &phase,
-          note_table[
-            cer0_scale_notes_octatonic_diminished[
-              (int) audio->registers[9] % cer0_scale_length_octatonic_diminished
-            ] + 36
-          ]
-        );
-      }
-      
-      audio->registers[6] = phase.frequency;
-      
       for (
         unsigned int frame = 0;
         frame < frameCount;
         ++frame
       ) {
+        if ((int) audio->registers[7] % 4222 == 0) {
+          audio->registers[9] = (
+            audio->registers[9] + 1.0f
+          );
+
+          cer0_phase_frequency_set(
+            &phase,
+            audio->note_table[
+              audio->scale[
+                (int) audio->registers[9] % audio->length_scale
+              ] + 12
+            ]
+          );
+        }
+        
+        if ((int) audio->registers[7] % 6444 == 0) {
+          audio->registers[0] = (
+            audio->registers[0] + ((float) audio->length_scale * 4328.23489f)
+          );
+
+          cer0_phase_frequency_set(
+            &phase_secondary,
+            audio->note_table[
+              audio->scale[
+                (int) audio->registers[0] % audio->length_scale
+              ] + 24
+            ]
+          );
+        }
+
+        if ((int) audio->registers[7] % 73289 == 0) {
+          audio->scale = scales[(int) audio->registers[7] % count_scales];
+          audio->length_scale = length_scales[(int) audio->registers[7] % count_scales];
+        }
+
         for (
           unsigned int index_buffer = 0;
           index_buffer < outputData->mNumberBuffers;
           ++index_buffer
         ) {
+          audio->registers[6] = phase.frequency;
+          audio->registers[4] = phase.frequency;
+
           audio->registers[5] = phase.value;
+          audio->registers[3] = phase_secondary.value;
           
-          float value = cer0_signal_triangle(
+          float value = (cer0_signal_triangle(
             audio->registers[5]
-          );
+          ) * 0.6f) + (cer0_signal_square(
+            audio->registers[3]
+          ) * 0.4f);
           
           if (
             index_buffer < buffer_length &&
             frame < buffer_size
           ) {
             buffer[index_buffer][frame] = (
-              (buffer[index_buffer][frame] * 0.7f) + 
-              (value * 0.3f)
+              (buffer[index_buffer][frame] * 0.9f) + 
+              (value * 0.1f)
             );
           }
 
           ((float*) outputData->mBuffers[index_buffer].mData)[frame] = (
-            (value * 0.3f) + (buffer[index_buffer][frame] * 0.7f)
-          ) * amplitude;
+            (value * 0.1f) + (buffer[index_buffer][frame] * 0.9f)
+          ) * audio->amplitude;
           
           cer0_phase_poll(
             &phase
+          );
+          
+          cer0_phase_poll(
+            &phase_secondary
           );
         }
 
@@ -171,4 +225,12 @@ void recol_audio_initialize(
   [audio->engine_audio connect:node_source to:node_output format:format_output];
   
   [audio->engine_audio startAndReturnError:nil];
+}
+
+void recol_audio_destroy(
+  struct recol_audio* audio
+) {
+  free(audio->note_table);
+
+  [audio->engine_audio stop];
 }

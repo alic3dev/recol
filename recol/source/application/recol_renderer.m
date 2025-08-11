@@ -1,11 +1,12 @@
-#import "renderer.h"
-#include "audio.h"
-#import "shader_types.h"
+#include <application/recol_renderer.h>
+
+#include <audio.h>
+#include <shader_types.h>
 
 #include <MetalKit/MetalKit.h>
 #include <simd/simd.h>
 
-@implementation metal_kit_renderer {
+@implementation recol_renderer {
   id<MTLDevice> metal_kit_device;
   id<MTLCommandQueue> command_queue;
   id<MTLRenderPipelineState> state_pipeline;
@@ -94,8 +95,8 @@
 } 
 
 - (void)drawInMTKView: (nonnull MTKView*) metal_kit_view {
-  size.x = 20;
-  size.y = 25;
+  size.x = 55;
+  size.y = 65;
   
   length_vertices = size.x * size.y;
   
@@ -129,7 +130,7 @@
   id<MTLCommandBuffer> command_buffer = [command_queue
     commandBuffer
   ];
-  command_buffer.label = @"metal_kit_renderer_command_buffer";
+  command_buffer.label = @"recol_renderer_command_buffer";
 
   MTLRenderPassDescriptor* metal_kit_render_pass_descriptor = metal_kit_view.currentRenderPassDescriptor;
 
@@ -138,7 +139,7 @@
       renderCommandEncoderWithDescriptor: metal_kit_render_pass_descriptor
     ];
 
-    metal_kit_render_encoder.label = @"metal_kit_renderer_encoder";
+    metal_kit_render_encoder.label = @"recol_renderer_encoder";
 
     [metal_kit_render_encoder
       setViewport: (MTLViewport) {

@@ -1,6 +1,8 @@
-#import <UIKit/UIKit.h>
+#include <application/recol_application_delegate.h>
 
-#import "app_delegate.h"
+#include <termination.h>
+
+#import <UIKit/UIKit.h>
 
 int main(
   int length_parameters,
@@ -9,8 +11,10 @@ int main(
   NSString* name_class_app_delegate;
 
   @autoreleasepool {
-    name_class_app_delegate = NSStringFromClass([AppDelegate class]);
+    name_class_app_delegate = NSStringFromClass([recol_application_delegate class]);
   }
+  
+  termination_initialize();
 
   return UIApplicationMain(
     length_parameters,
