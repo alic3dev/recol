@@ -1,0 +1,23 @@
+<plist>
+	<dict>
+		<key>UILaunchStoryboardName</key>
+		<string></string>
+		<key>UIMainStoryboardFile</key>
+		<string>metil_ios</string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<key>CFBundleIdentifier</key>
+		<string>dev.alic3.recol</string>
+		<key>CFBundleName</key>
+		<string>recol</string>
+		<key>CFBundleExecutable</key>
+		<string>recol</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>audio</string>
+			<string>processing</string>
+		</array>
+	</dict>
+</plist>

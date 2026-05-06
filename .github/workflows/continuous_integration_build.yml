@@ -1,0 +1,138 @@
+name: continuous_integration_build
+on:
+  push:
+    branches: ["core"]
+  pull_request:
+    branches: ["*"]
+env:
+  target_device_version: 18.5
+  target_metal_standard: metal3.2
+jobs:
+  continuous_integration_build:
+    name: continuous_integration_build
+    runs-on: macos-latest
+    steps:
+      - name: git_initialization
+        run: git config --global init.defaultBranch core
+      - name: checkout_recol
+        uses: actions/checkout@v5
+        with:
+          repository: alic3dev/recol
+          path: recol
+      - name: cache_restore_cer0
+        id: cache_restore_cer0
+        uses: actions/cache/restore@v4
+        with:
+          path: cer0
+          key: cache_cer0_0_0_0
+      - name: cache_restore_clic3
+        id: cache_restore_clic3
+        uses: actions/cache/restore@v4
+        with:
+          path: clic3
+          key: cache_clic3_0_0_0
+      - name: cache_restore_interrupt_handler
+        id: cache_restore_interrupt_handler
+        uses: actions/cache/restore@v4
+        with:
+          path: interrupt_handler
+          key: cache_interrupt_handler_0_0_0
+      - name: cache_restore_math_c
+        id: cache_restore_math_c
+        uses: actions/cache/restore@v4
+        with:
+          path: math_c
+          key: cache_math_c_0_0_0
+      - name: cache_restore_metil
+        id: cache_restore_metil
+        uses: actions/cache/restore@v4
+        with:
+          path: metil
+          key: cache_metil_3_0_0
+      - name: checkout_cer0
+        if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/cer0
+          path: cer0
+      - name: checkout_clic3
+        if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/clic3
+          path: clic3
+      - name: checkout_interrupt_handler
+        if: steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/interrupt_handler
+          path: interrupt_handler
+      - name: checkout_math_c
+        if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/math_c
+          path: math_c
+      - name: checkout_metil
+        if: steps.cache_restore_metil.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: alic3dev/metil
+          path: metil
+      - name: make_clic3
+        if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
+        run: cd clic3 && make clic3_ios target_device_version=${{ env.target_device_version }} target_device=iphone
+      - name: make_math_c
+        if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
+        run: cd math_c && make math_c_ios target_device_version=${{ env.target_device_version }} target_device=iphone
+      - name: make_cer0
+        if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
+        run: cd cer0 && make cer0_ios target_device_version=${{ env.target_device_version }} target_device=iphone
+      - name: make_interrupt_handler
+        if: steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true'
+        run: cd interrupt_handler && make interrupt_handler_ios target_device_version=${{ env.target_device_version }} target_device=iphone
+      - name: make_metil
+        if: steps.cache_restore_metil.outputs.cache-hit != 'true'
+        run: cd metil && make metil_object library/ios/release/metil_metal_model.metalar library/ios/release/metil_metal_colours.metalar target_device_version=${{ env.target_device_version }} target_metal_standard=${{ env.target_metal_standard }} target_device=iphone
+      - name: make_recol
+        run: cd recol && make target_device_version=${{ env.target_device_version }} target_metal_standard=${{ env.target_metal_standard }}
+      - name: cache_save_cer0
+        id: cache_save_cer0
+        if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            cer0
+          key: cache_cer0_0_0_0
+      - name: cache_save_clic3
+        id: cache_save_clic3
+        if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            clic3
+          key: cache_clic3_0_0_0
+      - name: cache_save_interrupt_handler
+        id: cache_save_interrupt_handler
+        if: steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            interrupt_handler
+          key: cache_interrupt_handler_0_0_0
+      - name: cache_save_math_c
+        id: cache_save_math_c
+        if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            math_c
+          key: cache_math_c_0_0_0
+      - name: cache_save_metil
+        id: cache_save_metil
+        if: steps.cache_restore_metil.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            metil
+          key: cache_metil_3_0_0
