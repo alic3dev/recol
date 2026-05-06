@@ -352,9 +352,6 @@ metil_audio_io_proc_macro_definition(
           cer0_phase_poll(
             &recol_audio->phase_secondary
           );
-
-((float*) output_data->mBuffers[index_buffer].mData)[frame] = ((float*) output_data->mBuffers[index_buffer].mData)[frame] * 100;
-
         }
 
         recol_audio->registers[7] = (
