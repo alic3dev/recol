@@ -6,8 +6,12 @@ recol:rani
 
 ## dependencies
 
-- [cer0](https://github.com/alic3dev/cer0)
-- [clic3](https://github.com/alic3dev/clic3)
+- [alic3dev](https://github.com/alic3dev)
+- - [cer0](https://github.com/alic3dev/cer0)
+- - [clic3](https://github.com/alic3dev/clic3)
+- - [interrupt_handler](https://github.com/alic3dev/interrupt_handler)
+- - [math_c](https://github.com/alic3dev/math_c)
+- - [metil](https://github.com/alic3dev/metil)
 
 # copyleft|copyright
 
