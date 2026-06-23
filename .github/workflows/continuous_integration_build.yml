@@ -10,7 +10,7 @@ env:
 jobs:
   continuous_integration_build:
     name: continuous_integration_build
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - name: git_initialization
         run: git config --global init.defaultBranch core
