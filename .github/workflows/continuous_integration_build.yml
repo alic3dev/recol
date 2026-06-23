@@ -21,61 +21,61 @@ jobs:
           path: recol
       - name: cache_restore_cer0
         id: cache_restore_cer0
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: cer0
           key: cache_cer0_0_0_0
       - name: cache_restore_clic3
         id: cache_restore_clic3
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: clic3
           key: cache_clic3_0_0_0
       - name: cache_restore_interrupt_handler
         id: cache_restore_interrupt_handler
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: interrupt_handler
           key: cache_interrupt_handler_0_0_0
       - name: cache_restore_math_c
         id: cache_restore_math_c
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: math_c
           key: cache_math_c_0_0_0
       - name: cache_restore_metil
         id: cache_restore_metil
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: metil
           key: cache_metil_3_0_0
       - name: checkout_cer0
         if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: alic3dev/cer0
           path: cer0
       - name: checkout_clic3
         if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: alic3dev/clic3
           path: clic3
       - name: checkout_interrupt_handler
         if: steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: alic3dev/interrupt_handler
           path: interrupt_handler
       - name: checkout_math_c
         if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: alic3dev/math_c
           path: math_c
       - name: checkout_metil
         if: steps.cache_restore_metil.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: alic3dev/metil
           path: metil
@@ -99,7 +99,7 @@ jobs:
       - name: cache_save_cer0
         id: cache_save_cer0
         if: steps.cache_restore_cer0.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             cer0
@@ -107,7 +107,7 @@ jobs:
       - name: cache_save_clic3
         id: cache_save_clic3
         if: steps.cache_restore_clic3.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             clic3
@@ -115,7 +115,7 @@ jobs:
       - name: cache_save_interrupt_handler
         id: cache_save_interrupt_handler
         if: steps.cache_restore_interrupt_handler.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             interrupt_handler
@@ -123,7 +123,7 @@ jobs:
       - name: cache_save_math_c
         id: cache_save_math_c
         if: steps.cache_restore_math_c.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             math_c
@@ -131,7 +131,7 @@ jobs:
       - name: cache_save_metil
         id: cache_save_metil
         if: steps.cache_restore_metil.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             metil
